@@ -5,8 +5,8 @@ const cachedTokensMap = new Map();
 
 const refreshToken = async (data) => {
   try {
-    const refreshedToken = await invokeTokenService(data.value.key);
-    cachedTokensMap.set(data.key, { token:refreshedToken });
+    const refreshedToken = await invokeTokenService(data.key);
+    cachedTokensMap.set(data.key, { token: refreshedToken });
   } catch (error) {
     throw error;
   }
