@@ -5,18 +5,18 @@ const correlationIdMiddleware = require('./middleware/correlationIdMiddleware');
 
 fastify.addHook('onRequest', correlationIdMiddleware);
 
-
-const getCatsWorker = generateNewWorker('getCatsWorker');
-const getDogsWorker = generateNewWorker('getDogsWorker');
-
-fastify.get('/getCatsInfo', function handler (request, reply) {
+fastify.get('/getCatsInfo', function handler(request, reply) {
   console.log('correlation Id: ', request.correlationId);
-  requestTracker[request.id] = (result) => reply.send(result)
-  getCatsWorker.postMessage({ requestId: request.id});
+  requestTracker[request.id] = (result) => reply.send(result);
+
+  const getCatsWorker = generateNewWorker('getCatsWorker'); // Create a new worker for each request
+  getCatsWorker.postMessage({ requestId: request.id });
 })
 
-fastify.get('/getDogsInfo', function handler (request, reply) {
-  requestTracker[request.id] = (result) => reply.send(result)
+fastify.get('/getDogsInfo', function handler(request, reply) {
+  requestTracker[request.id] = (result) => reply.send(result);
+
+  const getDogsWorker = generateNewWorker('getDogsWorker'); // Create a new worker for each request
   getDogsWorker.postMessage({ requestId: request.id });
 })
 
