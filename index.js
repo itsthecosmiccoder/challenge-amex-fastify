@@ -1,11 +1,16 @@
 const fastify = require('fastify')({ logger: true, connectionTimeout: 5000 });
 const generateNewWorker = require('./utils/generateNewWorker');
 const requestTracker = require('./utils/requestTracker');
+const correlationIdMiddleware = require('./middleware/correlationIdMiddleware');
+
+fastify.addHook('onRequest', correlationIdMiddleware);
+
 
 const getCatsWorker = generateNewWorker('getCatsWorker');
 const getDogsWorker = generateNewWorker('getDogsWorker');
 
 fastify.get('/getCatsInfo', function handler (request, reply) {
+  console.log('correlation Id: ', request.correlationId);
   requestTracker[request.id] = (result) => reply.send(result)
   getCatsWorker.postMessage({ requestId: request.id});
 })
